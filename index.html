@@ -388,12 +388,15 @@ const provider = new GoogleAuthProvider();
 
 window.connectUpLogin = async function () {
   try {
-    const result = await signInWithPopup(auth, provider);
-    alert("Welcome to ConnectUp, " + result.user.displayName);
+    await signInWithRedirect(auth, provider);
   } catch (error) {
     alert("Login error: " + error.message);
   }
 };
+
+getRedirectResult(auth).catch(error => {
+  alert("Login error: " + error.message);
+});
 
 window.connectUpLogout = async function () {
   await signOut(auth);
