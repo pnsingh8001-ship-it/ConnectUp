@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d18">
+<title>ConnectUp — Social. Privacy. Freedom.</title>
+<style>
+:root {
+  --bg:#080d18;--panel:#111a2b;--panel2:#172338;
+  --text:#f4f7ff;--muted:#91a0b9;--accent:#55c8ff;
+  --border:#26344b;--pink:#a56bff;--green:#35d49a;
+}
+body.light {
+  --bg:#f3f6fb;--panel:#ffffff;--panel2:#edf2fa;
+  --text:#172238;--muted:#65738b;--accent:#087fc2;
+  --border:#dce4ef;--pink:#8050d5;--green:#12976a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,sans-serif;transition:.2s}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1500px;margin:auto;min-height:100vh}
+.topbar{height:66px;position:sticky;top:0;z-index:5;
+background:var(--panel);border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;
+padding:0 22px}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px;
+color:var(--accent)}
+.logo span{color:var(--pink)}
+.top-actions{display:flex;gap:10px;align-items:center}
+.iconbtn,.primary,.secondary{border:0;border-radius:12px;
+padding:11px 15px;background:var(--panel2);color:var(--text)}
+.primary{background:linear-gradient(110deg,#168fd4,#7955db);
+color:white;font-weight:bold}
+.layout{display:grid;grid-template-columns:230px minmax(0,650px) 290px;
+gap:22px;padding:22px}
+.sidebar,.rightbar{position:sticky;top:85px;height:max-content}
+.nav{display:flex;align-items:center;gap:13px;padding:14px;
+border-radius:13px;color:var(--text);cursor:pointer;margin-bottom:5px}
+.nav:hover,.nav.active{background:var(--panel2);color:var(--accent)}
+.nav .ico{font-size:21px;width:25px;text-align:center}
+.card{background:var(--panel);border:1px solid var(--border);
+border-radius:17px;margin-bottom:18px;overflow:hidden}
+.cardpad{padding:16px}
+.section-title{font-size:18px;font-weight:800;margin:0 0 14px}
+.stories{display:flex;gap:15px;overflow:auto;padding:15px}
+.story{min-width:64px;text-align:center;font-size:12px;color:var(--muted)}
+.ring{width:61px;height:61px;border-radius:50%;padding:3px;
+background:linear-gradient(45deg,#ffb347,#ed4c9a,#8d61ff);
+margin:auto auto 7px}
+.ring img{width:100%;height:100%;object-fit:cover;
+border-radius:50%;border:3px solid var(--panel)}
+.avatar{width:40px;height:40px;object-fit:cover;border-radius:50%}
+.posthead{display:flex;align-items:center;gap:10px;padding:14px}
+.posthead strong{display:block;font-size:14px}
+.small{font-size:12px;color:var(--muted);margin-top:4px}
+.postimage{width:100%;max-height:560px;object-fit:cover;display:block;
+background:var(--panel2)}
+.post-actions{display:flex;gap:18px;padding:13px 15px;font-size:22px}
+.action{background:none;border:0;color:var(--text);font-size:22px;padding:0}
+.action.liked{color:#ff4f83}
+.post-text{padding:0 15px 15px;font-size:14px;line-height:1.5}
+.post-bottom{display:flex;gap:8px;padding:0 14px 14px}
+.post-bottom input{flex:1;min-width:0;background:var(--panel2);
+border:1px solid var(--border);border-radius:20px;padding:11px;
+color:var(--text);outline:none}
+.post-bottom button{background:none;color:var(--accent);
+border:0;font-weight:bold}
+.profilebox{text-align:center;padding:18px}
+.bigavatar{width:75px;height:75px;border-radius:50%;object-fit:cover}
+.statrow{display:flex;justify-content:space-around;margin:18px 0}
+.statrow strong{display:block}
+.statrow small{color:var(--muted)}
+.trend{padding:12px 0;border-bottom:1px solid var(--border)}
+.trend:last-child{border:0}
+.trend small{color:var(--muted)}
+.ai-fab{position:fixed;right:22px;bottom:25px;width:60px;height:60px;
+border:0;border-radius:50%;background:linear-gradient(135deg,#168fd4,#9252e8);
+color:white;font-size:25px;box-shadow:0 8px 30px #168fd455;z-index:10}
+.modal{display:none;position:fixed;inset:0;background:#000a;z-index:20;
+align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.modalbox{background:var(--panel);border:1px solid var(--border);
+border-radius:20px;padding:20px;width:100%;max-width:470px;max-height:85vh;
+overflow:auto}
+.modalbox input,.modalbox textarea{width:100%;padding:13px;margin:8px 0;
+border-radius:10px;background:var(--panel2);border:1px solid var(--border);
+color:var(--text)}
+.modalbox textarea{min-height:90px}
+.close{float:right;background:none;border:0;color:var(--muted);font-size:22px}
+.feedtabs{display:flex;gap:8px;padding:12px 15px;border-bottom:1px solid var(--border)}
+.feedtabs button{border:0;background:var(--panel2);color:var(--muted);
+padding:9px 14px;border-radius:20px}
+.feedtabs button.active{background:#168fd4;color:white}
+.bottomnav{display:none}
+.notice{font-size:12px;color:var(--muted);line-height:1.6}
+@media(max-width:1100px){
+.layout{grid-template-columns:190px minmax(0,650px);justify-content:center}
+.rightbar{display:none}
+}
+@media(max-width:700px){
+.topbar{padding:0 13px;height:58px}
+.layout{display:block;padding:10px;max-width:650px}
+.sidebar{display:none}
+.logo{font-size:23px}
+.top-actions .desktop{display:none}
+.bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;
+z-index:8;background:var(--panel);border-top:1px solid var(--border);
+justify-content:space-around;padding:10px 3px}
+.bottomnav button{background:none;border:0;color:var(--text);font-size:22px}
+.ai-fab{bottom:72px;right:15px;width:52px;height:52px}
+.card{border-radius:13px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="logo">Connect<span>Up</span></div>
+  <div class="top-actions">
+    <button class="iconbtn desktop" onclick="openModal('searchModal')">⌕ Search</button>
+    <button class="iconbtn" onclick="toggleTheme()" title="Change theme">☼</button>
+    <button class="iconbtn" onclick="openModal('privacyModal')">🔒</button>
+    <button class="primary" onclick="openModal('createModal')">＋ Create</button>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav active" onclick="showSection('home')"><span class="ico">⌂</span> Home</div>
+  <div class="nav" onclick="showSection('explore')"><span class="ico">⌕</span> Explore</div>
+  <div class="nav" onclick="showSection('reels')"><span class="ico">▶</span> Reels</div>
+  <div class="nav" onclick="showSection('messages')"><span class="ico">✉</span> Messages</div>
+  <div class="nav" onclick="showSection('notifications')"><span class="ico">♡</span> Notifications</div>
+  <div class="nav" onclick="showSection('communities')"><span class="ico">♧</span> Communities</div>
+  <div class="nav" onclick="showSection('profile')"><span class="ico">◉</span> Profile</div>
+  <div class="nav" onclick="openModal('privacyModal')"><span class="ico">♧</span> Privacy Center</div>
+  <div class="nav" onclick="openModal('aiModal')"><span class="ico">✦</span> ConnectUp AI</div>
+  <div class="nav" onclick="openModal('ownerModal')"><span class="ico">⚙</span> Owner Center</div>
+  <div class="notice" style="padding:15px">We Control the Platform,<br>But Users Control Their Privacy.</div>
+</aside>
+
+<main>
+<section id="home">
+<div class="card">
+  <div class="stories" id="stories">
+    <div class="story" onclick="openModal('storyModal')"><div class="ring"><img src="https://i.pravatar.cc/100?img=12"></div>＋ Your story</div>
+    <div class="story"><div class="ring"><img src="https://i.pravatar.cc/100?img=32"></div>riya</div>
+    <div class="story"><div class="ring"><img src="https://i.pravatar.cc/100?img=11"></div>arjun</div>
+    <div class="story"><div class="ring"><img src="https://i.pravatar.cc/100?img=44"></div>meera</div>
+    <div class="story"><div class="ring"><img src="https://i.pravatar.cc/100?img=21"></div>kabir</div>
+    <div class="story"><div class="ring"><img src="https://i.pravatar.cc/100?img=8"></div>anaya</div>
+  </div>
+</div>
+
+<div class="feedtabs">
+<button class="active" onclick="filterFeed('all',this)">For you</button>
+<button onclick="filterFeed('photo',this)">Photos</button>
+<button onclick="filterFeed('text',this)">Updates</button>
+</div>
+
+<div id="feed">
+<article class="card post" data-type="photo">
+  <div class="posthead">
+    <img class="avatar" src="https://i.pravatar.cc/100?img=32">
+    <div><strong>Riya Sharma <span style="color:var(--accent)">✓</span></strong><div class="small">Lucknow · 12 min ago</div></div>
+    <span style="margin-left:auto">•••</span>
+  </div>
+  <img class="postimage" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900" alt="Landscape">
+  <div class="post-actions">
+    <button class="action" onclick="likePost(this)">♡</button>
+    <button class="action" onclick="commentPost(this)">♧</button>
+    <button class="action" onclick="sharePost()">↗</button>
+    <button class="action" style="margin-left:auto" onclick="bookmarkPost(this)">♧</button>
+  </div>
+  <div class="post-text"><b class="likes">1,248 likes</b><br><b>riya_sharma</b> Finding little moments of peace. ✨<br><span class="small">View all 38 comments</span></div>
+  <div class="post-bottom"><input placeholder="Add a comment..." aria-label="Comment"><button onclick="commentPost(this)">Post</button></div>
+</article>
+
+<article class="card post" data-type="photo">
+  <div class="posthead">
+    <img class="avatar" src="https://i.pravatar.cc/100?img=11">
+    <div><strong>Arjun Verma</strong><div class="small">New Delhi · 1 hour ago</div></div>
+    <span style="margin-left:auto">•••</span>
+  </div>
+  <img class="postimage" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=900" alt="Mountains">
+  <div class="post-actions">
+    <button class="action" onclick="likePost(this)">♡</button>
+    <button class="action" onclick="commentPost(this)">♧</button>
+    <button class="action" onclick="sharePost()">↗</button>
+    <button class="action" style="margin-left:auto" onclick="bookmarkPost(this)">♧</button>
+  </div>
+  <div class="post-text"><b class="likes">862 likes</b><br><b>arjun.verma</b> A little escape into nature. 🌿</div>
+  <div class="post-bottom"><input placeholder="Add a comment..."><button onclick="commentPost(this)">Post</button></div>
+</article>
+</div>
+</section>
+
+<section id="explore" hidden>
+<div class="card cardpad"><h2>Explore ConnectUp</h2><input id="exploreSearch" placeholder="Search people and posts..." style="width:100%;padding:13px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);color:var(--text)"></div>
+<div class="card cardpad"><h3>Discover</h3><p class="notice">Explore content and creators from across ConnectUp.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<img class="postimage" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=500">
+<img class="postimage" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=500">
+<img class="postimage" src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=500">
+<img class="postimage" src="https://images.unsplash.com/photo-1500534623283-312aade485b7?w=500">
+</div></div>
+</section>
+
+<section id="reels" hidden>
+<div class="card cardpad"><h2>Reels</h2><p class="notice">Short videos from the ConnectUp community.</p>
+<div style="height:470px;background:linear-gradient(145deg,#172b49,#6041a0);border-radius:15px;display:grid;place-items:center;text-align:center">
+<div><div style="font-size:55px">▶</div><h2>Reels are coming</h2><p>Video upload and playback will be connected to storage in the next stage.</p></div></div>
+</div>
+</section>
+
+<section id="messages" hidden>
+<div class="card cardpad"><h2>Messages</h2><p class="notice">Your private conversations will appear here after account and realtime chat setup.</p>
+<div class="trend">💬 <b>Riya Sharma</b><div class="small">Start a conversation</div></div>
+<div class="trend">💬 <b>Arjun Verma</b><div class="small">Start a conversation</div></div>
+<button class="primary" onclick="alert('Real messaging will be enabled after backend setup.')">New message</button></div>
+</section>
+
+<section id="notifications" hidden>
+<div class="card cardpad"><h2>Notifications</h2><div class="trend">♡ <b>Riya Sharma</b> liked your post.</div><div class="trend">＋ <b>Arjun Verma</b> started following you.</div><div class="trend">💬 <b>Meera</b> commented on a post.</div><p class="notice">Sample notifications — live notifications require backend setup.</p></div>
+</section>
+
+<section id="communities" hidden>
+<div class="card cardpad"><h2>Communities</h2><p>Find people who share your interests.</p><button class="primary" onclick="alert('Community creation will be connected to the backend.')">＋ Create Community</button><div class="trend"><b>Photography Club</b><div class="small">Photography · Community preview</div></div><div class="trend"><b>Technology Talk</b><div class="small">Technology · Community preview</div></div></div>
+</section>
+
+<section id="profile" hidden>
+<div class="card profilebox">
+<img class="bigavatar" src="https://i.pravatar.cc/150?img=12">
+<h2>Your Profile</h2><p class="small">@your_username</p>
+<div class="statrow"><div><strong>0</strong><small>Posts</small></div><div><strong>0</strong><small>Followers</small></div><div><strong>0</strong><small>Following</small></div></div>
+<button class="primary" onclick="alert('Profile editing will be connected to your account.')">Edit Profile</button>
+</div>
+</section>
+</main>
+
+<aside class="rightbar">
+<div class="card profilebox">
+<img class="bigavatar" src="https://i.pravatar.cc/150?img=12">
+<h3>Your ConnectUp</h3><div class="small">@your_username</div>
+<div class="statrow"><div><strong>0</strong><small>Posts</small></div><div><strong>0</strong><small>Followers</small></div><div><strong>0</strong><small>Following</small></div></div>
+</div>
+<div class="card cardpad"><h3 class="section-title">Trending now</h3>
+<div class="trend"><small>Technology · Trending</small><br><b>#ConnectUpAI</b></div>
+<div class="trend"><small>Community · Trending</small><br><b>#PrivacyFirst</b></div>
+<div class="trend"><small>Creators · Trending</small><br><b>#CreatorLife</b></div>
+</div>
+<div class="notice">ConnectUp · Trust, Privacy & Freedom.<br>Created by Hydro.</div>
+</aside>
+</div>
+
+<nav class="bottomnav">
+<button onclick="showSection('home')">⌂</button>
+<button onclick="showSection('explore')">⌕</button>
+<button onclick="openModal('createModal')">＋</button>
+<button onclick="showSection('messages')">✉</button>
+<button onclick="showSection('profile')">◉</button>
+</nav>
+<button class="ai-fab" onclick="openModal('aiModal')" title="ConnectUp AI">✦</button>
+</div>
+
+<div class="modal" id="createModal"><div class="modalbox">
+<button class="close" onclick="closeModal('createModal')">×</button>
+<h2>Create a post</h2><textarea id="postText" placeholder="What's on your mind?"></textarea>
+<input id="postImage" type="url" placeholder="Image URL (optional)">
+<button class="primary" onclick="createPost()">Publish preview</button>
+<p class="notice">Posts are currently saved only in this page preview, not online.</p>
+</div></div>
+
+<div class="modal" id="storyModal"><div class="modalbox">
+<button class="close" onclick="closeModal('storyModal')">×</button>
+<h2>Add a story</h2><input type="url" placeholder="Story image URL">
+<p class="notice">Story publishing will be enabled with user accounts and cloud storage.</p>
+</div></div>
+
+<div class="modal" id="searchModal"><div class="modalbox">
+<button class="close" onclick="closeModal('searchModal')">×</button>
+<h2>Search ConnectUp</h2><input placeholder="Search people, topics and posts">
+</div></div>
+
+<div class="modal" id="privacyModal"><div class="modalbox">
+<button class="close" onclick="closeModal('privacyModal')">×</button>
+<h2>🔐 Privacy Center</h2>
+<p>We Control the Platform, But Users Control Their Privacy.</p>
+<ul><li>Clear information about data use.</li><li>No selling personal user data.</li><li>Private messages are not used for advertising.</li><li>Users can request access, export or deletion of their data.</li><li>Legal obligations may require limited disclosure.</li></ul>
+<p class="notice">These are product commitments. Technical safeguards and legal policies must be implemented before launch.</p>
+</div></div>
+
+<div class="modal" id="aiModal"><div class="modalbox">
+<button class="close" onclick="closeModal('aiModal')">×</button>
+<h2>✦ ConnectUp AI</h2><p class="notice">Your Smart Companion</p>
+<div id="aiReply" class="cardpad" style="background:var(--panel2);border-radius:12px">Hello! I'm the ConnectUp AI interface. Real AI replies will be enabled after a secure AI service is connected.</div>
+<input id="aiQuestion" placeholder="Ask ConnectUp AI...">
+<button class="primary" onclick="askAI()">Send</button>
+</div></div>
+
+<div class="modal" id="ownerModal"><div class="modalbox">
+<button class="close" onclick="closeModal('ownerModal')">×</button>
+<h2>♛ Owner Center</h2>
+<p>Platform overview and management workspace.</p>
+<ul><li>User management — requires owner authentication.</li><li>Security monitoring — requires server integration.</li><li>Verification requests — requires database.</li><li>Revenue — requires payment integration.</li><li>Admin permissions — requires secure backend.</li></ul>
+<p class="notice">This is a preview only. It does not grant owner privileges or expose user data.</p>
+</div></div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function toggleTheme(){document.body.classList.toggle('light')}
+function showSection(id){
+document.querySelectorAll('main section').forEach(s=>s.hidden=true);
+document.getElementById(id).hidden=false;
+document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+window.scrollTo({top:0,behavior:'smooth'});
+}
+function likePost(btn){
+btn.classList.toggle('liked');btn.textContent=btn.classList.contains('liked')?'♥':'♡';
+const likes=btn.closest('.post').querySelector('.likes');
+let count=parseInt(likes.textContent.replace(/[^0-9]/g,''))||0;
+likes.textContent=(count+(btn.classList.contains('liked')?1:-1)).toLocaleString()+' likes';
+}
+function commentPost(btn){
+const post=btn.closest('.post');
+const input=post.querySelector('input');
+if(!input||!input.value.trim()){alert('Write a comment first.');return}
+const line=document.createElement('div');line.className='post-text';
+line.textContent='You: '+input.value.trim();
+post.querySelector('.post-text').after(line);input.value='';
+}
+function sharePost(){if(navigator.share){navigator.share({title:'ConnectUp',text:'Check out this post on ConnectUp'}).catch(()=>{})}else{alert('Share this ConnectUp post with your friends!')}}
+function bookmarkPost(btn){btn.textContent=btn.textContent==='▣'?'♧':'▣'}
+function filterFeed(type,btn){
+document.querySelectorAll('.feedtabs button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+document.querySelectorAll('.post').forEach(p=>p.hidden=type!=='all'&&p.dataset.type!==type);
+}
+function createPost(){
+const text=document.getElementById('postText').value.trim();
+const url=document.getElementById('postImage').value.trim();
+if(!text&&!url){alert('Add text or an image URL.');return}
+const post=document.createElement('article');post.className='card post';post.dataset.type=url?'photo':'text';
+post.innerHTML='<div class="posthead"><div class="avatar" style="background:var(--panel2)"></div><div><strong>You</strong><div class="small">Just now · Local preview</div></div></div>';
+if(url){const img=document.createElement('img');img.className='postimage';img.src=url;img.alt='Your post';post.appendChild(img)}
+const body=document.createElement('div');body.className='post-text';body.textContent=text;post.appendChild(body);
+const actions=document.createElement('div');actions.className='post-actions';actions.innerHTML='<button class="action" onclick="likePost(this)">♡</button><button class="action" onclick="sharePost()">↗</button>';post.appendChild(actions);
+document.getElementById('feed').prepend(post);closeModal('createModal');
+document.getElementById('postText').value='';document.getElementById('postImage').value='';
+}
+function askAI(){
+const q=document.getElementById('aiQuestion').value.trim();if(!q)return;
+document.getElementById('aiReply').textContent='AI service is not connected yet. Your question: '+q;
+document.getElementById('aiQuestion').value='';
+}
+</script>
+</body>
+</html>
